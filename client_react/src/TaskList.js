@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import Task from './Task';
 import './TaskList.css';
+import _ from 'lodash';
 
 class TaskList extends Component {	
 
 	shouldComponentUpdate(nextProps, nextState) {
-    // You can access `this.props` and `this.state` here
-    // This function should return a boolean, whether the component should re-render.
-		return true;
+		return !_.isEqual(this.props.tasks, nextProps.tasks);
 	}
   
 	render() {
-		const tasks = this.props.tasks.map((task, k) => <Task key={k} title={task.title}/>);
+		const tasks = this.props.tasks.map((task, k) =>
+			<Task key={k} id={task._id} title={task.title} deleteTask={this.props.deleteTask} />);
 		return (
 			<div className="TaskList">
 			{tasks}

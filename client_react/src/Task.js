@@ -2,13 +2,23 @@ import React, { Component } from 'react';
 import './Task.css';
 
 class Task extends Component {
+	constructor() {
+		super();
+		
+		this.handleClickDelete = this.handleClickDelete.bind(this);
+	}
+	
 	shouldComponentUpdate(nextProps, nextState) {
-    // You can access `this.props` and `this.state` here
-    // This function should return a boolean, whether the component should re-render.
-		return true;
+		return this.props.title !== nextProps.title;
 	}
   
+	handleClickDelete() {
+		console.log("Delete button clicked");
+		this.props.deleteTask(this.props.id);
+	}
+	
 	render() {
+		console.log("In render, id is: " + this.props.id);
 		return (<span className="Task"><div className="col-md-1">
             <input name="select" type="checkbox"/>
         </div>  
@@ -16,7 +26,7 @@ class Task extends Component {
             {this.props.title}
         </div>
         <div className="col-md-4">
-            <input type="button" value="Delete" className="btn btn-danger"/>
+            <input type="button" onClick={this.handleClickDelete} value="Delete" className="btn btn-danger"/>
         </div>
         <br/><br/></span>);
 	}

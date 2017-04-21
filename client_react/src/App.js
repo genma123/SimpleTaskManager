@@ -8,29 +8,26 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-		init: true,
 		tasks: []
     };
 	
-	this.add = this.add.bind(this);
+	this.addTask = this.addTask.bind(this);
+	this.deleteTask = this.deleteTask.bind(this);
   }
   
-  retrieve() {
+  retrieveTasks() {
+	console.log("In retrieveTasks");
 	  var app = this;
 	  return fetch(`api/tasks`)
 	  .then(function(res) {
 		  return res.json();
 	  }).then(function(data) {
-		  console.log("tasks: " + JSON.stringify(data));
-		  app.setState({ tasks: data });
+		  console.log("In retrieveTasks: (1)" + JSON.stringify(data, null, 2));
+		  app.setState({ tasks: data.sort() });
 	  });
   }
   
-  add(event) {
-	  /* console.log("In add, this: " + this + ", target: " + event.target);
-	  if (event.target) {
-		  console.log("value: " + event.target.elements.title.value);
-	  } */
+  addTask(event) {
 	  var app = this;
 	  var task = { title: event.target.elements.title.value, isDone: false };
 	  var body = JSON.stringify(task);
@@ -50,38 +47,36 @@ class App extends Component {
 	  });
 	  event.preventDefault();
   }
-  
+    
+  deleteTask(id) {
+	  console.log("In deleteTask, id: " + id);
+	  event.preventDefault();
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
-    // You can access `this.props` and `this.state` here
-    // This function should return a boolean, whether the component should re-render.
-	let init = this.state.init;
-	console.log("this.state.tasks: " + JSON.stringify(this.state.tasks, null, 2));
-	console.log("nextState.tasks: " + JSON.stringify(nextState.tasks, null, 2));
-	// let diff = _(this.state.tasks).differenceWith(nextState.tasks, _.isEqual);
-	// console.log("diff: " + JSON.stringify(diff, null, 2));
-	return init || !_.isEqual(this.state.tasks.sort(), nextState.tasks.sort());
+	return !_.isEqual(this.state.tasks, nextState.tasks);
   }
   
   componentWillMount() {
-	this.retrieve();
+	   console.log("In componentWillMount");
+	this.retrieveTasks();
   }
   
   componentDidUpdate() {
-    this.setState({init: false});
   }
   
   render() {
-	  console.log("IN App.render()");
+	  // console.log("IN App.render(), tasks: " +  + JSON.stringify(this.state.tasks));
 	return (
 		<div className="container">
 			<h1>MyTaskList</h1>
 			<hr/>
-			<form className="well" onSubmit={this.add}>
+			<form className="well" onSubmit={this.addTask}>
 			   <div className="form-group">
 				   <input type="text" name="title" className="form-control" placeholder="Add Task..."/>
 			   </div>
 			</form>
-			<TaskList tasks={this.state.tasks} />
+			<TaskList tasks={this.state.tasks} deleteTask={this.deleteTask}/>
 		</div>    );
   }
 }
