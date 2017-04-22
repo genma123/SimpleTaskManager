@@ -22,7 +22,7 @@ class App extends Component {
 	  .then(function(res) {
 		  return res.json();
 	  }).then(function(data) {
-		  console.log("In retrieveTasks: (1)" + JSON.stringify(data, null, 2));
+		  // console.log("In retrieveTasks: (1)" + JSON.stringify(data, null, 2));
 		  app.setState({ tasks: data.sort() });
 	  });
   }
@@ -50,11 +50,27 @@ class App extends Component {
     
   deleteTask(id) {
 	  console.log("In deleteTask, id: " + id);
-	  event.preventDefault();
+	  var app = this;
+	  fetch(`api/task/${id}` , {
+ 		  headers: {
+			'Accept': 'application/json, text/plain, */*',
+			'Content-Type': 'application/json'
+ 		  },
+ 		  method: "DELETE",
+	  }).then(function(res) {
+		  return res.json();
+	  }).then(function(data) {
+		  app.setState({ tasks: _.filter(app.state.tasks, function(t) { return t._id !== id; }) });
+	  });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-	return !_.isEqual(this.state.tasks, nextState.tasks);
+		  /* console.log("In shouldComponentUpdate: length is " + this.state.tasks.length);
+		  console.log("In shouldComponentUpdate: length is " + nextState.tasks.length); */
+		 // THIS WON'T WORK ONCE WE START MODIFYING TASKS:
+	   var shouldUpdate = this.state.tasks.length !== nextState.tasks.length;
+	   console.log("In shouldComponentUpdate, shouldUpdate: " + shouldUpdate);
+	return shouldUpdate;
   }
   
   componentWillMount() {
@@ -66,7 +82,7 @@ class App extends Component {
   }
   
   render() {
-	  // console.log("IN App.render(), tasks: " +  + JSON.stringify(this.state.tasks));
+	// console.log("IN App.render(), tasks: " +  JSON.stringify(this.state.tasks, null, 2));
 	return (
 		<div className="container">
 			<h1>MyTaskList</h1>

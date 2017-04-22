@@ -13,6 +13,7 @@ class Task extends Component {
 	}
   
 	handleClickDelete() {
+		event.preventDefault();
 		console.log("Delete button clicked");
 		this.props.deleteTask(this.props.id);
 	}
