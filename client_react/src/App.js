@@ -13,6 +13,7 @@ class App extends Component {
 	
 	this.addTask = this.addTask.bind(this);
 	this.deleteTask = this.deleteTask.bind(this);
+	this.updateTask = this.updateTask.bind(this);
   }
   
   retrieveTasks() {
@@ -47,7 +48,32 @@ class App extends Component {
 	  });
 	  event.preventDefault();
   }
-    
+  
+  updateTask(id, title, selected) {
+	  var app = this;
+	  var task = { title: title, isDone: !selected };
+	  var body = JSON.stringify(task);
+	  console.log("Updating " + id + ": " + body);
+	  fetch(`api/task/${id}` , {
+ 		  headers: {
+			'Accept': 'application/json, text/plain, */*',
+			'Content-Type': 'application/json'
+ 		  },
+ 		  method: "PUT",
+		  body: body
+	  }).then(function(res) {
+		  return res.json();
+	  }).then(function(data) {
+		  var tasks = app.state.tasks;
+		  var index = _.findIndex(tasks, { "_id": id });
+		  // console.log("id: " + id + ", index: " + index + ", task: " + JSON.stringify(tasks[index]) + ", data: " + JSON.stringify(data));
+		  task._id = id;
+		  tasks[index] = task;
+		  // console.log(" tasks: " +  JSON.stringify(tasks, null, 2));
+		  app.setState({ tasks: tasks });
+	  });
+  }
+  
   deleteTask(id) {
 	  console.log("In deleteTask, id: " + id);
 	  var app = this;
@@ -64,17 +90,18 @@ class App extends Component {
 	  });
   }
 
+  /* NOT NEEDED
   shouldComponentUpdate(nextProps, nextState) {
-		  /* console.log("In shouldComponentUpdate: length is " + this.state.tasks.length);
-		  console.log("In shouldComponentUpdate: length is " + nextState.tasks.length); */
+		  / * console.log("In shouldComponentUpdate: length is " + this.state.tasks.length);
+		  console.log("In shouldComponentUpdate: length is " + nextState.tasks.length); * /
 		 // THIS WON'T WORK ONCE WE START MODIFYING TASKS:
 	   var shouldUpdate = this.state.tasks.length !== nextState.tasks.length;
 	   console.log("In shouldComponentUpdate, shouldUpdate: " + shouldUpdate);
 	return shouldUpdate;
-  }
+  } */
   
   componentWillMount() {
-	   console.log("In componentWillMount");
+	   // console.log("In componentWillMount");
 	this.retrieveTasks();
   }
   
@@ -92,7 +119,7 @@ class App extends Component {
 				   <input type="text" name="title" className="form-control" placeholder="Add Task..."/>
 			   </div>
 			</form>
-			<TaskList tasks={this.state.tasks} deleteTask={this.deleteTask}/>
+			<TaskList tasks={this.state.tasks} deleteTask={this.deleteTask} updateTask={this.updateTask} />
 		</div>    );
   }
 }
