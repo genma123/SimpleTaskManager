@@ -5,15 +5,11 @@ import _ from 'lodash';
 
 class TaskList extends Component {	
 
-	/* NOT NEEDED
-	shouldComponentUpdate(nextProps, nextState) {
-		return !_.isEqual(this.props.tasks, nextProps.tasks);
-	} */
-  
 	render() {
-		// TODO should use id as key not index
+		// NOTE task.isDone can be undefined, so forcing the prop to be either true or false prevents
+		// a "switch from uncontrolled to controlled" warning
 		const tasks = this.props.tasks.map((task) =>
-			<Task key={task._id} id={task._id} title={task.title} selected={task.isDone} deleteTask={this.props.deleteTask} updateTask={this.props.updateTask} />);
+			<Task key={task._id} id={task._id} title={task.title} selected={task.isDone ? true : false} deleteTask={this.props.deleteTask} updateTask={this.props.updateTask} />);
 		return (
 			<div className="TaskList">
 			{tasks}

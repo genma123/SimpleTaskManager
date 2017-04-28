@@ -25,7 +25,7 @@ class Task extends Component {
 	}
 	
 	render() {
-		console.log("In render, id is: " + this.props.id);
+		console.log("In render, id is: " + this.props.id + ", selected: " + this.props.selected);
 		return (<span className="Task"><div className="col-md-1">
             <input name="select" type="checkbox" checked={this.props.selected} onChange={this.handleSelect} />
         </div>  

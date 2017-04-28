@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import TaskList from './TaskList';
+import Client from './Client';
 import _ from 'lodash';
 
 class App extends Component {
@@ -18,34 +19,11 @@ class App extends Component {
   
   retrieveTasks() {
 	console.log("In retrieveTasks");
-	  var app = this;
-	  return fetch(`api/tasks`)
-	  .then(function(res) {
-		  return res.json();
-	  }).then(function(data) {
-		  // console.log("In retrieveTasks: (1)" + JSON.stringify(data, null, 2));
-		  app.setState({ tasks: data.sort() });
-	  });
+	  Client.retrieve((data) => this.setState({ tasks: data.sort() }));
   }
   
   addTask(event) {
-	  var app = this;
-	  var task = { title: event.target.elements.title.value, isDone: false };
-	  var body = JSON.stringify(task);
-	  console.log("Posting: " + body);
-	  fetch(`api/task`, {
- 		  headers: {
-			'Accept': 'application/json, text/plain, */*',
-			'Content-Type': 'application/json'
- 		  },
- 		  method: "POST",
-		  body: body
-	  }).then(function(res) {
-		  return res.json();
-	  }).then(function(data) {
-		  var tasks = app.state.tasks.concat([data]);
-		  app.setState({ tasks: tasks });
-	  });
+	  Client.add(event, (data) => this.setState({ tasks: this.state.tasks.concat([data]) }));
 	  event.preventDefault();
   }
   
@@ -89,16 +67,6 @@ class App extends Component {
 		  app.setState({ tasks: _.filter(app.state.tasks, function(t) { return t._id !== id; }) });
 	  });
   }
-
-  /* NOT NEEDED
-  shouldComponentUpdate(nextProps, nextState) {
-		  / * console.log("In shouldComponentUpdate: length is " + this.state.tasks.length);
-		  console.log("In shouldComponentUpdate: length is " + nextState.tasks.length); * /
-		 // THIS WON'T WORK ONCE WE START MODIFYING TASKS:
-	   var shouldUpdate = this.state.tasks.length !== nextState.tasks.length;
-	   console.log("In shouldComponentUpdate, shouldUpdate: " + shouldUpdate);
-	return shouldUpdate;
-  } */
   
   componentWillMount() {
 	   // console.log("In componentWillMount");
