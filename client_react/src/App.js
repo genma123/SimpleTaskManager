@@ -17,8 +17,8 @@ class App extends Component {
 	this.updateTask = this.updateTask.bind(this);
   }
   
+  //Use of arrow functions keeps "this" in scope.
   retrieveTasks() {
-	console.log("In retrieveTasks");
 	  Client.retrieve((data) => this.setState({ tasks: data.sort() }));
   }
   
@@ -28,43 +28,18 @@ class App extends Component {
   }
   
   updateTask(id, title, selected) {
-	  var app = this;
-	  var task = { title: title, isDone: !selected };
-	  var body = JSON.stringify(task);
-	  console.log("Updating " + id + ": " + body);
-	  fetch(`api/task/${id}` , {
- 		  headers: {
-			'Accept': 'application/json, text/plain, */*',
-			'Content-Type': 'application/json'
- 		  },
- 		  method: "PUT",
-		  body: body
-	  }).then(function(res) {
-		  return res.json();
-	  }).then(function(data) {
-		  var tasks = app.state.tasks;
-		  var index = _.findIndex(tasks, { "_id": id });
-		  // console.log("id: " + id + ", index: " + index + ", task: " + JSON.stringify(tasks[index]) + ", data: " + JSON.stringify(data));
-		  task._id = id;
-		  tasks[index] = task;
-		  // console.log(" tasks: " +  JSON.stringify(tasks, null, 2));
-		  app.setState({ tasks: tasks });
+	  var newSelected = !selected;
+	  Client.update(id, title, newSelected, (data) => {
+		  var tasks = this.state.tasks;
+		  // console.log("found: " + JSON.stringify(_(tasks).find({ "_id": id })));
+		  _(tasks).find({ "_id": id }).isDone = newSelected;
+		  this.setState({ tasks: tasks });
 	  });
   }
   
   deleteTask(id) {
-	  console.log("In deleteTask, id: " + id);
-	  var app = this;
-	  fetch(`api/task/${id}` , {
- 		  headers: {
-			'Accept': 'application/json, text/plain, */*',
-			'Content-Type': 'application/json'
- 		  },
- 		  method: "DELETE",
-	  }).then(function(res) {
-		  return res.json();
-	  }).then(function(data) {
-		  app.setState({ tasks: _.filter(app.state.tasks, function(t) { return t._id !== id; }) });
+	  Client.remove(id, (data) => {
+		  this.setState({ tasks: _.filter(this.state.tasks, function(t) { return t._id !== id; }) });
 	  });
   }
   
