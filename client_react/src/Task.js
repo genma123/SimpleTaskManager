@@ -11,7 +11,8 @@ class Task extends Component {
 	}
 	
 	shouldComponentUpdate(nextProps, nextState) {
-		return !_.isEqual(this.props, nextProps)
+		// return !_.isEqual(this.props, nextProps); // overkill
+		return this.props.selected !== nextProps.selected;
 	}
   
 	handleSelect() {

@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'; // React must be in scope when using JSX
 import Task from './Task';
 import './TaskList.css';
-import _ from 'lodash';
 
 class TaskList extends Component {	
 
